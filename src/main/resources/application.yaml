@@ -33,6 +33,7 @@ spring:
                 - Path=/products/**
               filters:
                 - RewritePath=/public/products(?<segment>/?.*), /api/v1/products$\{segment}
+                - AddResponseHeader=X-Path-rewrite-info, Path have been rewrite to /api/v1/products
 #                - name: RewritePath
 #                  args:
 #                    regexp: /products/?(?<segment>.*)
