@@ -66,3 +66,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     registerWithEureka: false
     fetchRegistry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, gateway
+  endpoint:
+    gateway:
+      enabled: true
