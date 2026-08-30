@@ -14,16 +14,16 @@ spring:
         webflux:
           routes:
             - id: billing-route
-              uri: http://localhost:8082
+              uri: lb://billing
               predicates:
                 - Path=/api/v1/customers/me/orders/{orderId}/invoice
                 - Method=GET
             - id: ordering-route
-              uri: http://localhost:8080
+              uri: lb://ordering
               predicates:
                 - Path=/api/v1/orders/**,/api/v1/customers/**
             - id: product-catalog-route
-              uri: http://localhost:8083
+              uri: lb://product-catalog
               predicates:
                 - Path=/api/v1/products/**,/api/v1/categories/**
                 - Method=GET,POST,PUT,DELETE,OPTIONS
@@ -38,3 +38,10 @@ spring:
 #                  args:
 #                    regexp: /products/?(?<segment>.*)
 #                    replacement: /api/v1/products$\{segment}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    registerWithEureka: false
+    fetchRegistry: true
