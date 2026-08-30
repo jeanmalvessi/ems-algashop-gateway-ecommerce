@@ -12,6 +12,17 @@ spring:
     gateway:
       server:
         webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: http://localhost:4200
+                allowedHeaders: '*'
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
           routes:
             - id: billing-route
               uri: lb://billing
@@ -28,7 +39,7 @@ spring:
                 - Path=/api/v1/products/**,/api/v1/categories/**
                 - Method=GET,POST,PUT,DELETE,OPTIONS
             - id: product-catalog-test-route
-              uri: http://localhost:8083
+              uri: lb://product-catalog
               predicates:
                 - Path=/products/**
               filters:
@@ -38,6 +49,14 @@ spring:
 #                  args:
 #                    regexp: /products/?(?<segment>.*)
 #                    replacement: /api/v1/products$\{segment}
+#              metadata:
+#                cors:
+#                  allowedOrigins: http://localhost:4200
+#                  allowedMethods:
+#                    - GET
+#                    - POST
+#                  allowedHeaders: '*'
+#                  maxAge: 30
 
 eureka:
   client:
