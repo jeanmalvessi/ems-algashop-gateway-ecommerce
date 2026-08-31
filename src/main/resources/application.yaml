@@ -19,6 +19,16 @@ spring:
         webflux:
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+            #- Retry=3,INTERNAL_SERVER_ERROR,GET,10ms,50ms,2,false # shorter version of the below configuration
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR
+                methods: GET,PUT
+                exceptions: java.io.IOException, java.util.concurrent.TimeoutException
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 20ms
           httpclient:
             connect-timeout: 1000
             response-timeout: 5000
