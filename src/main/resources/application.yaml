@@ -19,6 +19,9 @@ spring:
         webflux:
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+          httpclient:
+            connect-timeout: 1000
+            response-timeout: 5000
           globalcors:
             add-to-simple-url-handler-mapping: true
             cors-configurations:
@@ -66,6 +69,9 @@ spring:
 #                    - POST
 #                  allowedHeaders: '*'
 #                  maxAge: 30
+              metadata:
+                response-timeout: 1000
+                connect-timeout: 1000
             - id: user-management-route
               uri: lb://authorization-server
               predicates:
