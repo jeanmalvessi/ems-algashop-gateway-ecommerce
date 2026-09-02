@@ -17,6 +17,13 @@ spring:
     gateway:
       server:
         webflux:
+          route-refresh-listener:
+            enabled: false
+#          filter:
+#            local-response-cache:
+#              enabled: true
+#              time-to-live: 1m
+#              size: 10MB
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
             #- Retry=3,INTERNAL_SERVER_ERROR,GET,10ms,50ms,2,false # shorter version of the below configuration
@@ -68,6 +75,8 @@ spring:
               predicates:
                 - Path=/api/v1/products/**,/api/v1/categories/**,/api/v1/upload-requests/**
                 - Method=GET,POST,PUT,DELETE,OPTIONS
+              filters:
+                - LocalResponseCache=5m,30MB
             - id: product-catalog-test-route
               uri: lb://product-catalog
               predicates:
