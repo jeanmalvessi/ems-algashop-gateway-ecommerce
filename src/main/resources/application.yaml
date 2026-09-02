@@ -55,6 +55,14 @@ spring:
               predicates:
                 - Path=/api/v1/orders/**,/api/v1/customers/**,/api/v1/shipping-cost-previews
                 - Method=GET,POST,PUT,DELETE,OPTIONS
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: ordering-route-cb
+                    statusCodes:
+                      - 502
+                      - 504
+                      - 500
             - id: product-catalog-route
               uri: lb://product-catalog
               predicates:
@@ -99,7 +107,19 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, gateway
+        include: health, gateway, circuitbreakers
   endpoint:
     gateway:
       enabled: true
+
+resilience4j.circuitbreaker:
+  instances:
+    ordering-route-cb:
+      slidingWindowSize: 8 # total calls to analyze
+      failureRateThreshold: 50 # 50%
+      minimumNumberOfCalls: 5 # minimum number of failures to calculate if its failing
+      permittedNumberOfCallsInHalfOpenState: 5
+      slidingWindowType: COUNT_BASED # / TIME_BASED
+      waitDurationInOpenState: 10s
+      maxWaitDurationInHalfOpenState: 30s
+      registerHealthIndicator: true # enable circuitbreakers health check

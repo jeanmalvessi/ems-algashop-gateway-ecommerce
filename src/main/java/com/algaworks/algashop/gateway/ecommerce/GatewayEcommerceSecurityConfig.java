@@ -15,7 +15,7 @@ public class GatewayEcommerceSecurityConfig {
         http.cors(Customizer.withDefaults())
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .authorizeExchange(authorize -> authorize
-                    .pathMatchers("/actuator/health").permitAll()
+                    .pathMatchers("/actuator/**").permitAll()
                     .pathMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                     .pathMatchers("/api/**").authenticated()
                     .anyExchange().denyAll()
