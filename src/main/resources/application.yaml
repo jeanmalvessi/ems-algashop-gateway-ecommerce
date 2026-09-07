@@ -8,18 +8,30 @@ logging:
 spring:
   application:
     name: gateway-ecommerce
+  config:
+    import:
+      - aws-secretsmanager:/secret/algashop/gateway-ecommerce/redis-password?prefix=gateway-ecommerce.secrets.
+      - aws-parameterstore:/config/algashop/gateway-ecommerce?prefix=gateway-ecommerce.params
+      - aws-parameterstore:/config/algashop/shared?prefix=shared.params
   data:
     redis:
-      host: algashop-redis
-      port: 6379
-      password: algashop
-      database: 3
+      host: ${gateway-ecommerce.params.redis.host}
+      port: ${gateway-ecommerce.params.redis.port}
+      password: ${gateway-ecommerce.secrets.redis-password}
+      database: ${gateway-ecommerce.params.redis.database}
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth.algashop.local:8081
+          issuer-uri: ${shared.params.auth-server-url}
   cloud:
+    aws:
+      credentials:
+        access-key: test
+        secret-key: test
+      region:
+        static: us-east-1
+      endpoint: http://algashop-localstack:4566
     gateway:
       server:
         webflux:
@@ -120,9 +132,12 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://algashop-service-registry:8761/eureka
+      defaultZone: ${shared.params.service-registry-url}/eureka
     registerWithEureka: false
     fetchRegistry: true
+  instance:
+    instanceId: ${random.uuid}
+    prefer-ip-address: true
 
 management:
   endpoints:
