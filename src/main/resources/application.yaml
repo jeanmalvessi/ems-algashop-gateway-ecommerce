@@ -45,28 +45,28 @@ spring:
           httpclient:
             connect-timeout: 1000
             response-timeout: 5000
-          globalcors:
-            add-to-simple-url-handler-mapping: true
-            cors-configurations:
-              '[/**]':
-                allowedOrigins: http://admin.algashop.local:4200
-                allowedHeaders: '*'
-                allowedMethods:
-                  - GET
-                  - POST
-                  - PUT
-                  - DELETE
-                  - OPTIONS
+#          globalcors:
+#            add-to-simple-url-handler-mapping: true
+#            cors-configurations:
+#              '[/**]':
+#                allowedOrigins: http://admin.algashop.local:4200
+#                allowedHeaders: '*'
+#                allowedMethods:
+#                  - GET
+#                  - POST
+#                  - PUT
+#                  - DELETE
+#                  - OPTIONS
           routes:
             - id: billing-route
               uri: lb://billing
               predicates:
-                - Path=/api/v1/customers/me/orders/{orderId}/invoice,/api/v1/orders/{orderId}/invoice,/api/v1/customers/me/credit-cards,/api/v1/customers/me/credit-cards/{creditCardId}
+                - Path=/api/v1/customers/me/credit-cards,/api/v1/customers/me/credit-cards/{creditCardId}
                 - Method=GET,POST,PUT,DELETE,OPTIONS
             - id: ordering-route
               uri: lb://ordering
               predicates:
-                - Path=/api/v1/orders/**,/api/v1/customers/**,/api/v1/shipping-cost-previews
+                - Path=/api/v1/customers/**,/api/v1/shipping-cost-previews
                 - Method=GET,POST,PUT,DELETE,OPTIONS
               filters:
                 - name: CircuitBreaker
@@ -79,7 +79,7 @@ spring:
             - id: product-catalog-route
               uri: lb://product-catalog
               predicates:
-                - Path=/api/v1/products/**,/api/v1/categories/**,/api/v1/upload-requests/**
+                - Path=/api/v1/products/**,/api/v1/categories/**
                 - Method=GET,POST,PUT,DELETE,OPTIONS
               filters:
                 - LocalResponseCache=1m,30MB
@@ -90,13 +90,13 @@ spring:
                       burstCapacity: 200 # maximum number of tokens the bucket can hold
                       requestedTokens: 1 # token cost for a single request
                     key-resolver: "#{@rateLimitKeyResolver}"
-            - id: product-catalog-test-route
-              uri: lb://product-catalog
-              predicates:
-                - Path=/products/**
-              filters:
-                - RewritePath=/public/products(?<segment>/?.*), /api/v1/products$\{segment}
-                - AddResponseHeader=X-Path-rewrite-info, Path have been rewrite to /api/v1/products
+#            - id: product-catalog-test-route
+#              uri: lb://product-catalog
+#              predicates:
+#                - Path=/products/**
+#              filters:
+#                - RewritePath=/public/products(?<segment>/?.*), /api/v1/products$\{segment}
+#                - AddResponseHeader=X-Path-rewrite-info, Path have been rewrite to /api/v1/products
 #                - name: RewritePath
 #                  args:
 #                    regexp: /products/?(?<segment>.*)
@@ -109,9 +109,8 @@ spring:
 #                    - POST
 #                  allowedHeaders: '*'
 #                  maxAge: 30
-              metadata:
-                response-timeout: 1000
-                connect-timeout: 1000
+#                response-timeout: 1000
+#                connect-timeout: 1000
             - id: user-management-route
               uri: lb://authorization-server
               predicates:
